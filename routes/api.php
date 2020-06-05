@@ -18,8 +18,8 @@ use Illuminate\Support\Facades\Route;
 //    return $request->user();
 //});
 Route::prefix('v1')->group(function () {
-    Route::prefix('auth')->group(function () {
-        Route::namespace('Api')->group(function () {
+    Route::namespace('Api')->group(function () {
+        Route::prefix('auth')->group(function () {
             // Below mention routes are public, user can access those without any restriction.
             // Create New User
             Route::post('register', 'AuthController@register');
@@ -28,14 +28,21 @@ Route::prefix('v1')->group(function () {
 
             // Refresh the JWT Token
             Route::get('refresh', 'AuthController@refresh');
-//        Route::get('/redirect', 'AuthController@redirectToProvider');
-            Route::post('/google', 'AuthController@handleProviderCallback');
             // Below mention routes are available only for the authenticated users.
             Route::middleware('auth:api')->group(function () {
                 // Get user info
                 Route::get('user', 'AuthController@user');
                 // Logout user from application
                 Route::post('logout', 'AuthController@logout');
+            });
+        });
+        Route::get('users','AuthController@users');
+        Route::prefix('tasks')->group(function () {
+            //get tasks
+            Route::get('/{keyword?}', 'TaskController@index');
+            //create task
+            Route::middleware('auth:api')->group(function () {
+                Route::post('/', 'TaskController@store');
             });
         });
     });

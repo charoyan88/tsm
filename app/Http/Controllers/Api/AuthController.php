@@ -83,6 +83,17 @@ class AuthController extends Controller
         ]);
     }
     /**
+     * Get all users
+     */
+    public function users()
+    {
+        $users = User::all();
+        return response()->json([
+            'status' => 'success',
+            'data' => $users
+        ]);
+    }
+    /**
      * Refresh JWT token
      */
     public function refresh()

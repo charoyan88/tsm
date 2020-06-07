@@ -108,7 +108,13 @@
         },
         methods: {
             getAllTasks() {
-                fetch(this.url, {
+                let url = new URL(this.url),
+                    params = {
+                        user_id: this.$auth.user().id,
+                    };
+                Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+                console.log(url)
+                fetch(url, {
                     method: 'GET',
                     // body: JSON.stringify({name: this.name, type: this.type}),
                     headers: {
@@ -184,7 +190,7 @@
 
         },
         mounted() {
-            this.getAllTasks();
+            this.getAllTasks(this.$auth.user().id);
             this. getMembers();
         },
         components: {

@@ -4,6 +4,11 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item" >
+                        <router-link :to="{name: 'home'}" class="navbar-link">Search</router-link>
+                    </li>
+                </ul>
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item" >
                         <router-link :to="{name: 'dashboard'}" class="navbar-link">My Tasks</router-link>
                     </li>
                 </ul>

@@ -22,10 +22,10 @@ class TaskController extends Controller
         $this->taskService = $taskService;
     }
 
-    public function index($keyword = null)
+    public function index($keyword = null,Request $request)
     {
         try {
-            $tasks = $this->taskService->getAll($keyword);
+            $tasks = $this->taskService->getAll($keyword,$request->user_id);
             return response()->json(['status' => 'success', 'data' => $tasks], 200);
         } catch (\Exception $exception) {
             return response()->json(['status' => 'error'], 400);

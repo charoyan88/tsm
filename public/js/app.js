@@ -3226,6 +3226,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _components_Navbar_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/Navbar.vue */ "./resources/js/components/Navbar.vue");
 //
 //
 //
@@ -3236,12 +3237,108 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
-    return {};
+    return {
+      keyword: "",
+      url: "".concat("http://127.0.0.1:8000", "/api/v1/tasks"),
+      page: 1,
+      pageCount: 1,
+      itemsPerPage: 5,
+      headers: [{
+        text: 'Name',
+        align: 'start',
+        sortable: false,
+        value: 'name'
+      }, {
+        text: 'Description',
+        value: 'description'
+      }, {
+        text: 'Author',
+        value: 'author'
+      }, {
+        text: 'Status',
+        value: 'status'
+      }, {
+        text: 'Assignees',
+        value: 'assignees'
+      }],
+      tasks: [],
+      assignees: []
+    };
+  },
+  methods: {
+    search: function search() {
+      var _this = this;
+
+      var url = this.url + '/' + this.keyword;
+      fetch(url, {
+        method: 'GET',
+        // body: JSON.stringify({name: this.name, type: this.type}),
+        headers: {
+          'Authorization': 'Bearer' + localStorage.getItem('laravel-jwt-auth'),
+          'Content-Type': 'application/json'
+        }
+      }).then(function (res) {
+        return res.text();
+      }).then(function (data) {
+        _this.tasks = JSON.parse(data).data;
+        _this.pageCount = _this.tasks.length / _this.itemsPerPage;
+        document.getElementById('data-table').style.display = "block";
+      })["catch"](function (err) {
+        return console.error(err);
+      });
+      console.log();
+    }
   },
   mounted: function mounted() {},
-  components: {//
+  components: {
+    Navbar: _components_Navbar_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
   }
 });
 
@@ -3554,7 +3651,15 @@ __webpack_require__.r(__webpack_exports__);
     getAllTasks: function getAllTasks() {
       var _this = this;
 
-      fetch(this.url, {
+      var url = new URL(this.url),
+          params = {
+        user_id: this.$auth.user().id
+      };
+      Object.keys(params).forEach(function (key) {
+        return url.searchParams.append(key, params[key]);
+      });
+      console.log(url);
+      fetch(url, {
         method: 'GET',
         // body: JSON.stringify({name: this.name, type: this.type}),
         headers: {
@@ -3640,7 +3745,7 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   mounted: function mounted() {
-    this.getAllTasks();
+    this.getAllTasks(this.$auth.user().id);
     this.getMembers();
   },
   components: {
@@ -28398,6 +28503,24 @@ var render = function() {
                     "router-link",
                     {
                       staticClass: "navbar-link",
+                      attrs: { to: { name: "home" } }
+                    },
+                    [_vm._v("Search")]
+                  )
+                ],
+                1
+              )
+            ]),
+            _vm._v(" "),
+            _c("ul", { staticClass: "navbar-nav mr-auto" }, [
+              _c(
+                "li",
+                { staticClass: "nav-item" },
+                [
+                  _c(
+                    "router-link",
+                    {
+                      staticClass: "navbar-link",
                       attrs: { to: { name: "dashboard" } }
                     },
                     [_vm._v("My Tasks")]
@@ -28452,22 +28575,162 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "container" }, [
-      _c("div", { staticClass: "card card-default" }, [
-        _c("div", { staticClass: "card-header" }, [_vm._v("Home")]),
-        _vm._v(" "),
-        _c("div", { staticClass: "card-body" })
-      ])
+  return _c("div", { staticClass: "container" }, [
+    _c("div", { staticClass: "card card-default" }, [
+      _c(
+        "div",
+        { staticClass: "card-body" },
+        [
+          _c("Navbar"),
+          _vm._v(" "),
+          _c("div", { staticClass: "card-body" }, [
+            _c("div", { staticClass: "form-row align-items-center" }, [
+              _c("div", { staticClass: "form-group col-md-5" }, [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.keyword,
+                      expression: "keyword"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: { type: "text", id: "keyword" },
+                  domProps: { value: _vm.keyword },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.keyword = $event.target.value
+                    }
+                  }
+                })
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "form-group col-md-3" }, [
+                _c(
+                  "button",
+                  { staticClass: "btn btn-dark", on: { click: _vm.search } },
+                  [_vm._v("Search")]
+                )
+              ]),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  staticStyle: { display: "none" },
+                  attrs: { id: "data-table" }
+                },
+                [
+                  _c("v-data-table", {
+                    attrs: {
+                      headers: _vm.headers,
+                      items: _vm.tasks,
+                      page: _vm.page,
+                      "items-per-page": _vm.itemsPerPage,
+                      "hide-default-footer": ""
+                    },
+                    on: {
+                      "update:page": function($event) {
+                        _vm.page = $event
+                      },
+                      "page-count": function($event) {
+                        _vm.pageCount = $event
+                      }
+                    },
+                    scopedSlots: _vm._u([
+                      {
+                        key: "body",
+                        fn: function(ref) {
+                          var items = ref.items
+                          var headers = ref.headers
+                          return [
+                            _c(
+                              "tbody",
+                              _vm._l(items, function(item, idx, k) {
+                                return _c(
+                                  "tr",
+                                  { key: idx },
+                                  _vm._l(headers, function(header, key) {
+                                    return _c(
+                                      "td",
+                                      { key: key },
+                                      [
+                                        header.value == "assignees"
+                                          ? _c(
+                                              "v-edit-dialog",
+                                              _vm._l(
+                                                item[header.value],
+                                                function(assigne, key) {
+                                                  return _c("span", [
+                                                    _vm._v(
+                                                      _vm._s(assigne.email)
+                                                    ),
+                                                    key <
+                                                    item[header.value].length -
+                                                      1
+                                                      ? _c("span", [
+                                                          _vm._v(",")
+                                                        ])
+                                                      : _vm._e()
+                                                  ])
+                                                }
+                                              ),
+                                              0
+                                            )
+                                          : _c("v-edit-dialog", [
+                                              _vm._v(
+                                                " " +
+                                                  _vm._s(item[header.value]) +
+                                                  "\n\n                                        "
+                                              )
+                                            ])
+                                      ],
+                                      1
+                                    )
+                                  }),
+                                  0
+                                )
+                              }),
+                              0
+                            )
+                          ]
+                        }
+                      }
+                    ])
+                  }),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    { staticClass: "text-center pt-2" },
+                    [
+                      _c("v-pagination", {
+                        attrs: { length: _vm.pageCount },
+                        model: {
+                          value: _vm.page,
+                          callback: function($$v) {
+                            _vm.page = $$v
+                          },
+                          expression: "page"
+                        }
+                      })
+                    ],
+                    1
+                  )
+                ],
+                1
+              )
+            ])
+          ])
+        ],
+        1
+      )
     ])
-  }
-]
+  ])
+}
+var staticRenderFns = []
 render._withStripped = true
 
 

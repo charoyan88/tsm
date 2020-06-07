@@ -7,12 +7,16 @@ use App\Models\Task;
 
 class TaskService
 {
-    public function getAll($keyword)
+    public function getAll($keyword,$id=null)
     {
         $data = array();
         $tasks = Task::with('author', 'status', 'assignees');
+        if($id)
+        {
+            $tasks = $tasks->where('author_id',$id);
+        }
         if ($keyword) {
-            $tasks = $tasks->where('name', 'like', '%' . $keyword . '%');
+            $tasks = $tasks->where('name', 'like', '%' . $keyword . '%')->orWhere('description', 'like', '%' . $keyword . '%');
         }
         $tasks = $tasks->get();
         foreach ($tasks as $key => $task) {

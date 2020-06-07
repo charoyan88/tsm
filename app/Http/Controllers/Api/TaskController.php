@@ -54,10 +54,29 @@ class TaskController extends Controller
         $assignees = [];
         if (count($request->assignees) > 0) {
             foreach ($request->assignees as $item) {
-                $assignees[] =['task_id'=>$task->id,'user_id'=>$item];
+                $assignees[] = ['task_id' => $task->id, 'user_id' => $item];
             }
             DB::table('task_user')->insert($assignees);
         }
         return response()->json(['status' => 'success', 'data' => $task->toJson()], 200);
+    }
+
+    public function update($id, Request $request)
+    {
+        $task = Task::find($id);
+        try {
+            switch ($request->item) {
+                case "assignees":
+                    $task->members()->sync($request->value);
+                    break;
+                default:
+                    if ($task->update([$request->item => $request->value])) {
+                        break;
+                    }
+            }
+            return response()->json(['status' => 'success'], 200);
+        } catch (\Exception $exception) {
+            return response()->json(['status' => 'error'], 400);
+        }
     }
 }

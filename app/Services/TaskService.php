@@ -16,11 +16,12 @@ class TaskService
         }
         $tasks = $tasks->get();
         foreach ($tasks as $key => $task) {
+            $data[$key]['id'] = $task->id;
             $data[$key]['name'] = $task->name;
             $data[$key]['description'] = $task->description;
-            $data[$key]['author'] = $task->author->first_name . " " . $task->author->last_name;
+            $data[$key]['author'] = $task->author->email;
             $data[$key]['status'] = $task->status->name;
-            $data[$key]['assignees'] = $task->assignees;
+            $data[$key]['assignees'] = $task->assignees->toArray();
         }
         return $data;
     }

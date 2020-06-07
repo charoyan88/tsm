@@ -21,4 +21,10 @@ class Task extends Model
     {
         return $this->hasManyThrough(User::class, TaskUser::class, 'task_id', 'id', 'id', 'user_id');
     }
+
+    public function members()
+    {
+        return $this->belongsToMany(TaskUser::class,'task_user','task_id','user_id');
+    }
+
 }

@@ -43,6 +43,7 @@ Route::prefix('v1')->group(function () {
             //create task
             Route::middleware('auth:api')->group(function () {
                 Route::post('/', 'TaskController@store');
+                Route::put('/{id}', 'TaskController@update');
             });
         });
     });

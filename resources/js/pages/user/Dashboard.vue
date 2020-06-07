@@ -10,33 +10,65 @@
                 <div class="card-body">
                     <div class="form-row align-items-center">
                         <div class="form-group col-md-10">
-                            <table class="table">
-                                <thead>
-                                <tr>
-                                    <th scope="col">Name</th>
-                                    <th scope="col">Description</th>
-                                    <th scope="col">Author</th>
-                                    <th scope="col">Status</th>
-                                    <th scope="col">Assignees</th>
-                                </tr>
-                                </thead>
-                                <tbody v-for="task in tasks">
-                                <tr>
-                                    <td @click="edit">{{task.name}}</td>
-                                    <td>{{task.description}}</td>
-                                    <td>{{task.author}}</td>
-                                    <td> {{task.status}}</td>
-                                    <td><span v-for="assignees in task.assignees">{{assignees.first_name+" "+assignees.last_name}}</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-dark">Edit</button>
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-sm btn-dark">Members</button>
-                                    </td>
-                                </tr>
+                            <div>
+                                <v-data-table
+                                        :headers="headers"
+                                        :items="tasks"
+                                        :page.sync="page"
+                                        :items-per-page="itemsPerPage"
+                                        hide-default-footer
+                                        @page-count="pageCount = $event"
+                                >
+                                    <template v-slot:body="{ items, headers }">
+                                        <tbody>
+                                        <tr v-for="(item,idx,k) in items" :key="idx">
+                                            <td v-for="(header,key) in headers" :key="key">
+                                                <v-edit-dialog v-if="header.value =='assignees'"
 
-                                </tbody>
-                            </table>
+                                                >
+                                                    <v-select
+                                                        v-model="item[header.value]"
+                                                        :items="members"
+                                                        item-text="name"
+                                                        item-value="id"
+                                                        :menu-props="{ maxHeight: '400' }"
+                                                        multiple
+                                                        hint=""
+                                                        @change="selectChange(item.id,item[header.value])"
+                                                        persistent-hint
+                                                ></v-select>
+
+                                                </v-edit-dialog>
+                                                <v-edit-dialog v-else-if="header.value =='author'"
+
+                                                > {{item[header.value]}}
+
+                                                </v-edit-dialog>
+                                                <v-edit-dialog v-else
+                                                               :return-value.sync="item[header.value]"
+                                                               @save="save(item.id,header.value,item[header.value],)"
+                                                               @cancel="cancel"
+                                                               @open="open"
+                                                               @close="close"
+                                                               large
+                                                > {{item[header.value]}}
+                                                    <template v-slot:input>
+                                                        <v-text-field
+                                                                v-model="item[header.value]"
+                                                                label="Edit"
+                                                                single-line
+                                                        ></v-text-field>
+                                                    </template>
+                                                </v-edit-dialog>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </template>
+                                </v-data-table>
+                                <div class="text-center pt-2" >
+                                    <v-pagination v-model="page" :length="pageCount"></v-pagination>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -53,7 +85,25 @@
                 name: null,
                 type: null,
                 url: `${process.env.MIX_APP_URL}/api/v1/tasks`,
+                usersUrl: `${process.env.MIX_APP_URL}/api/v1/users`,
+                page: 1,
+                pageCount: 1,
+                itemsPerPage: 5,
+                headers: [
+                    {
+                        text: 'Name',
+                        align: 'start',
+                        sortable: false,
+                        value: 'name',
+                    },
+                    {text: 'Description', value: 'description'},
+                    {text: 'Author', value: 'author'},
+                    {text: 'Status', value: 'status'},
+                    {text: 'Assignees', value: 'assignees'},
+                ],
                 tasks: [],
+                members:[],
+                assignees:[],
             }
         },
         methods: {
@@ -68,22 +118,74 @@
                 }).then((res) => res.text())
                     .then((data) => {
                         this.tasks = JSON.parse(data).data;
-                        console.log(JSON.parse(data).data)
+                        this.pageCount = this.tasks.length/this.itemsPerPage;
                     })
                     .catch((err) => console.error(err));
                 console.log()
             },
-            edit()
-            {
-                console.log(123);
+            save(id,item,value) {
+                fetch(this.url+'/'+id, {
+                    method: 'PUT',
+                    body: JSON.stringify({item: item, value: value}),
+                    headers: {
+                        'Authorization': 'Bearer' + localStorage.getItem('laravel-jwt-auth'),
+                        'Content-Type': 'application/json'
+                    }
+                }).then((res) => res.text())
+                    .then((data) => {
+                        console.log(data)
+                    })
+                    .catch((err) => console.error(err));
+                console.log()
             },
-            showMembers() {
+            cancel() {
 
-            }
+            },
+            open() {
+
+            },
+            close() {
+
+            },
+            selectChange(id,assignees)
+            {
+                fetch(this.url+'/'+id, {
+                    method: 'PUT',
+                    body: JSON.stringify({item:"assignees",value: assignees}),
+                    headers: {
+                        'Authorization': 'Bearer' + localStorage.getItem('laravel-jwt-auth'),
+                        'Content-Type': 'application/json'
+                    }
+                }).then((res) => res.text())
+                    .then((data) => {
+                        console.log(data)
+                    })
+                    .catch((err) => console.error(err));
+                console.log()
+            },
+            getMembers()
+            {
+                fetch(this.usersUrl, {
+                    method: 'GET',
+                    // body: JSON.stringify({name: this.name, type: this.type}),
+                    headers: {
+                        'Authorization': 'Bearer' + localStorage.getItem('laravel-jwt-auth'),
+                        'Content-Type': 'application/json'
+                    }
+                }).then((res) => res.text())
+                    .then((data) => {
+                        let members = JSON.parse(data).data;
+                        members.forEach((element)=>{
+                            this.members.push({id:element.id,name:element.first_name+" "+element.last_name})
+                        });
+                    })
+                    .catch((err) => console.error(err));
+            },
 
         },
         mounted() {
-            this.getAllTasks()
+            this.getAllTasks();
+            this. getMembers();
         },
         components: {
             Navbar

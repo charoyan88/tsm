@@ -1,7 +1,6 @@
 import VueRouter from 'vue-router'
 // Pages
 import Home from './pages/Home'
-import About from './pages/About'
 import Register from './pages/Register'
 import Login from './pages/Login'
 import Dashboard from './pages/user/Dashboard'
@@ -12,14 +11,6 @@ const routes = [
         path: '/',
         name: 'home',
         component: Home,
-        meta: {
-            auth: undefined
-        }
-    },
-    {
-        path: '/about',
-        name: 'about',
-        component: About,
         meta: {
             auth: undefined
         }

@@ -1,7 +1,7 @@
 ## About Project
 Task managment system 
 The project was written by Laravel Framework 7  and Vue js
-## Instalation
+## Installation
 <p>git clone https://github.com/charoyan88/scraper.git</p>
 <p>composer install</p>
 <p>php artisan jwt:secret</p>

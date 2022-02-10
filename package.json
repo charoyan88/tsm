@@ -28,7 +28,7 @@
         "bootstrap-multiselect": "^0.9.15",
         "dotenv": "^8.2.0",
         "es6-promise": "^4.2.8",
-        "node-sass": "^4.13.1",
+        "node-sass": "^7.0.0",
         "uiv": "^0.34.3",
         "vee-validate": "^3.2.5",
         "vue-axios": "^2.1.5",
